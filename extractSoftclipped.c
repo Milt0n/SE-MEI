@@ -11,6 +11,7 @@ void process_alignment(bam1_t *b, bam_hdr_t *hdr, FILE *of, int length) {
     uint32_t *cigar = bam_get_cigar(b);
     char int2char[16] = {'N', 'A', 'C', 'N', 'G', 'N', 'N', 'N',
                          'T', 'N', 'N', 'N', 'N', 'N', 'N', 'N'};
+    char* qname = bam_get_qname(b);
 
     for(i=0; i<b->core.n_cigar; i++) {
         op=bam_cigar_op(cigar[i]);
@@ -19,7 +20,7 @@ void process_alignment(bam1_t *b, bam_hdr_t *hdr, FILE *of, int length) {
             if(bam_cigar_type(op)&2) pos += op_len;
             if(bam_cigar_type(op)&1) apos += op_len;
         } else {
-            fprintf(of, "@%s:%"PRId32"\n", hdr->target_name[b->core.tid], pos);
+            fprintf(of, "@%s:%"PRId32"\n", qname, pos);
             for(j=0; j < op_len; j++) {
                 fprintf(of, "%c", int2char[bam_seqi(bam_get_seq(b), j+apos)]);
             }
